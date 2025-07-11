@@ -1,11 +1,11 @@
 from fastapi import APIRouter, status, Response, HTTPException
-from SchemaStudent import StudentPublic, StudentSchema, StudentsList, first_letter_dont_repeat
-from ServiceStudent import Student_CRUD
+from SchemaStudent import StudentPublic, StudentSchema, StudentsList
+from ServiceStudent import first_letter_dont_repeat, Student_CRUD
 
 router_student = APIRouter()
 
 @router_student.get("/getStudents", response_model=StudentsList)
-def getStudents(res: Response):
+def getStudents(res: Response) -> list:
     """
     Endpoint para recuperar a lista de estudantes.
 
@@ -17,10 +17,12 @@ def getStudents(res: Response):
         404 Not Found: Se não existirem estudantes no banco de dados.
     """
     students = Student_CRUD.get_students()
+    print(students)
     
-    if students is None or students is []:
+    if students is None or not students:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Students not found"
         )
     
     res.status_code = status.HTTP_200_OK
@@ -28,7 +30,7 @@ def getStudents(res: Response):
     return students
 
 @router_student.post("/addNewStudent", response_model=StudentPublic)
-def createStudent(student: StudentSchema, res: Response) -> StudentPublic:
+def createStudent(newStudent: StudentSchema, res: Response) -> StudentPublic:
     """
     Adiciona um novo estudante ao banco de dados.
     Este endpoint recebe os dados de um estudante, calcula a primeira letra do nome que não se repete,
@@ -40,87 +42,24 @@ def createStudent(student: StudentSchema, res: Response) -> StudentPublic:
     Respostas:
     - 201: Estudante criado com sucesso.
     """
-    if not student or student is {}:
+    if not newStudent or newStudent is {}:
         raise HTTPException(
             status_code=status.HTTP_204_NO_CONTENT
         )
+        
+    firstLetter = first_letter_dont_repeat(newStudent.name)  
     
+    student_data = newStudent.model_dump()
+    student_data["firstLetter"] = firstLetter
     
-    result = Student_CRUD.create_students(student.model_dump())
+    result = Student_CRUD.create_students(student_data)
     
     if not result:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST
         )
     
-    
     res.status_code = status.HTTP_201_CREATED
     
     return result
 
-# @router_student.put("/updateStudent/{id}", response_model=StudentPublic, status_code=status.HTTP_202_ACCEPTED)
-# def updateStudent(id: int, student: StudentSchema):
-#     """
-#     Atualiza as informações de um estudante existente no banco de dados.
-#     Parâmetros:
-#     - id (int): O identificador único do estudante a ser atualizado.
-#     - student (StudentSchema): Objeto contendo os novos dados do estudante.
-#     Retorna:
-#     - StudentPublic: Os dados atualizados do estudante.
-#     Códigos de status:
-#     - 202 ACCEPTED: Atualização realizada com sucesso.
-#     - 404 NOT FOUND: Estudante não encontrado.
-#     - 204 NO CONTENT: Nenhuma informação foi fornecida para atualização.
-#     Detalhes:
-#     - Verifica se o ID fornecido é válido e corresponde a um estudante existente.
-#     - Gera a primeira letra não repetida do nome do estudante.
-#     - Atualiza os dados do estudante no banco de dados (DataBase).
-#     """
-    
-#     if id <= 0 or id > len(DataBase):
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail="Student not found"
-#         )
-         
-#     if not student or student is []:
-#         raise HTTPException(
-#             status_code=status.HTTP_204_NO_CONTENT,
-#             detail="No information has been added"
-#             )
-    
-#     nonRepeatedLetter = first_letter_dont_repeat(student.name)
-
-#     Student = StudentPublic(
-#         id=id,
-#         name=student.name,
-#         score=student.score,
-#         nonRepeatedLetter=nonRepeatedLetter
-#     )
-    
-#     DataBase[id - 1] = Student
-    
-#     return Student
-
-# @router_student.delete("/deleteStudent/{id}", status_code=status.HTTP_200_OK)
-# def deleteStudent(id: int):
-#     """
-#     Deleta um estudante do banco de dados pelo seu ID.
-#     Parâmetros:
-#     - id (int): O ID do estudante a ser deletado.
-#     Retorno:
-#     - status HTTP 200 OK em caso de sucesso.
-#     - status HTTP 404 NOT FOUND se o estudante não for encontrado.
-#     Exceções:
-#     - HTTPException: Lançada se o ID for inválido ou se o estudante não existir.
-#     Exemplo de uso:
-#     DELETE /deleteStudent/1
-#     """
-#     if id <= 0 or id > len(DataBase):
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail="Student not found"
-#         )
-        
-#     del DataBase[id - 1]
-    
