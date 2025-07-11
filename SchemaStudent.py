@@ -8,7 +8,7 @@ class StudentPublic(BaseModel):
     nonRepeatedLetter: str
 
 class StudentSchema(BaseModel):
-    name: Annotated[str, Field(min_length=3, pattern='^[a-zA-ZÀ-ü\s]+$')]
+    name: Annotated[str, Field(min_length=3, max_length=100, pattern='^[a-zA-ZÀ-ü\s]+$', examples=['Pablo', 'Anna', 'Josenilson'])]
     score: Annotated[float, Field(ge=0, le=10)]
     
 def first_letter_dont_repeat(value: str) -> str:
