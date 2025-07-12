@@ -58,3 +58,15 @@ Crie uma API simples com as seguintes rotas:
 4. **Acesse a documentação interativa (Swagger):**
     - Abra o navegador e acesse: [http://localhost/docs](http://localhost/docs)
     - Por meio dessa interface, é possível testar todas as rotas da API.
+
+
+## Escolhas de linguagem, framework e bibliotecas
+
+**Linguagem:**  
+Optei por utilizar **Python** por ser uma linguagem prática, pouco verbosa e com sintaxe simples e limpa, facilitando o desenvolvimento rápido de APIs.
+
+**Framework:**  
+O **FastAPI** foi escolhido devido à minha experiência prévia e por oferecer uma estrutura moderna, eficiente e intuitiva para criação de APIs REST.
+
+**Bibliotecas:**  
+Para validação dos dados, utilizei o **Pydantic**, que permite definir modelos de dados com validação automática, economizando tempo e garantindo flexibilidade na checagem dos inputs (como nome e nota dos estudantes). Por fim, utilizei o **SQLModel** para facilitar a comunicação entre objetos Python e bancos de dados SQL, optando pelo **SQLite** como solução simples e integrada ao projeto.
