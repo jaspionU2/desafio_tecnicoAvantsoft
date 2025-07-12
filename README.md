@@ -52,7 +52,7 @@ Crie uma API simples com as seguintes rotas:
     ```
     ou
     ```bash
-   fastaí dev app.py
+   fastapi dev app.py
     ```
 
 4. **Acesse a documentação interativa (Swagger):**
