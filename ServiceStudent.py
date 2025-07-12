@@ -24,6 +24,15 @@ class Student_CRUD():
         except Exception as err:
             session.rollback()
             print(f"erro inesperado: {err}")
+            
+    def get_student_by_id(id: int):
+        try:
+            with Session(engine) as session:
+                return session.exec(select(Student).
+                                    where(Student.id == id)).first()
+        except Exception as err:
+            session.rollback()
+            print(f"erro inesperado: {err}")
                 
     def create_students(student: dict) -> dict:
         try:            
@@ -41,3 +50,30 @@ class Student_CRUD():
         except Exception as err:
             print(f"erro inesperado: {err}")
             return None
+        
+    def update_student(id: int, student: dict) -> dict:
+        try:
+            with Session(engine) as session:
+                result = session.exec(update(Student).
+                             where(Student.id == id).
+                             values(student).
+                             returning(Student.id, Student.name, Student.score, Student.firstLetter)).first()
+                session.commit()
+                if result:
+                    return dict(result._mapping)
+                else:
+                    return None
+        except Exception as err:
+            print(f"erro inesperado: {err}")
+            return None
+    def delete_student(id: int) -> None | bool:
+        try:
+            with Session(engine) as session:
+                result = session.exec(delete(Student).
+                                      where(Student.id == id))
+                session.commit()
+                return result.rowcount > 0
+        except Exception as err:
+            print(f"erro inesperado: {err}")
+            return None
+        
